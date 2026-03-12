@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gärtnerei – Kundensuche</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=DM+Sans:wght@300;400;500&display=swap');
+
+  :root {
+    --green-deep: #1a2e1a;
+    --green-mid: #2d5a27;
+    --green-light: #4a8c3f;
+    --green-pale: #c8e6c0;
+    --cream: #f5f0e8;
+    --brown: #8b6f47;
+    --text: #1a2e1a;
+    --shadow: 0 4px 24px rgba(26,46,26,0.12);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--cream); min-height: 100vh; color: var(--text); }
+
+  /* LOGIN */
+  #login-screen {
+    min-height: 100vh; display: flex; align-items: center; justify-content: center;
+    background: linear-gradient(160deg, var(--green-deep) 0%, var(--green-mid) 60%, var(--green-light) 100%);
+    padding: 24px;
+  }
+  .login-card {
+    background: var(--cream); border-radius: 20px; padding: 48px 40px;
+    width: 100%; max-width: 360px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); text-align: center;
+  }
+  .login-icon { font-size: 48px; margin-bottom: 8px; }
+  .login-card h1 { font-family: 'Playfair Display', serif; font-size: 1.8rem; color: var(--green-deep); margin-bottom: 6px; }
+  .login-card p { color: var(--brown); font-size: 0.9rem; margin-bottom: 32px; }
+  .login-card input {
+    width: 100%; padding: 14px 18px; border: 2px solid var(--green-pale); border-radius: 12px;
+    font-size: 1rem; font-family: 'DM Sans', sans-serif; background: white; color: var(--text);
+    margin-bottom: 16px; transition: border-color 0.2s; outline: none;
+  }
+  .login-card input:focus { border-color: var(--green-light); }
+  .login-btn {
+    width: 100%; padding: 14px; background: var(--green-mid); color: white; border: none;
+    border-radius: 12px; font-size: 1rem; font-family: 'DM Sans', sans-serif;
+    font-weight: 500; cursor: pointer; transition: background 0.2s, transform 0.1s;
+  }
+  .login-btn:hover { background: var(--green-deep); }
+  .login-btn:active { transform: scale(0.98); }
+  .login-error { color: #c0392b; font-size: 0.85rem; margin-top: 12px; display: none; }
+
+  /* APP */
+  #app-screen { display: none; min-height: 100vh; }
+  header {
+    background: var(--green-deep); color: white; padding: 20px 24px 16px;
+    position: sticky; top: 0; z-index: 10; box-shadow: 0 2px 12px rgba(0,0,0,0.2);
+  }
+  .header-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+  .header-title { font-family: 'Playfair Display', serif; font-size: 1.3rem; display: flex; align-items: center; gap: 8px; }
+  .logout-btn {
+    background: rgba(255,255,255,0.15); border: none; color: white; padding: 6px 14px;
+    border-radius: 20px; font-size: 0.8rem; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: background 0.2s;
+  }
+  .logout-btn:hover { background: rgba(255,255,255,0.25); }
+  .search-box { display: flex; gap: 10px; align-items: center; }
+  .search-box input {
+    flex: 1; padding: 12px 18px; border: none; border-radius: 12px; font-size: 1rem;
+    font-family: 'DM Sans', sans-serif; background: rgba(255,255,255,0.15); color: white; outline: none; transition: background 0.2s;
+  }
+  .search-box input::placeholder { color: rgba(255,255,255,0.6); }
+  .search-box input:focus { background: rgba(255,255,255,0.25); }
+  .search-btn {
+    padding: 12px 20px; background: var(--green-light); color: white; border: none;
+    border-radius: 12px; font-size: 1rem; cursor: pointer; transition: background 0.2s;
+  }
+  .search-btn:hover { background: #3a7030; }
+
+  /* CONTENT */
+  main { padding: 24px 20px; max-width: 600px; margin: 0 auto; }
+  .stats-bar { display: flex; gap: 12px; margin-bottom: 24px; flex-wrap: wrap; }
+  .stat-chip {
+    background: white; border: 1px solid var(--green-pale); border-radius: 20px;
+    padding: 6px 14px; font-size: 0.82rem; color: var(--green-mid); font-weight: 500;
+  }
+
+  /* CARDS */
+  .result-card {
+    background: white; border-radius: 16px; padding: 24px; box-shadow: var(--shadow);
+    border-left: 4px solid var(--green-light); margin-bottom: 16px; animation: slideIn 0.25s ease;
+  }
+  @keyframes slideIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+  .card-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 16px; gap: 12px; }
+  .kunde-name { font-family: 'Playfair Display', serif; font-size: 1.25rem; color: var(--green-deep); }
+  .kunde-nr { background: var(--green-deep); color: white; padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 500; white-space: nowrap; }
+  .card-row { display: flex; align-items: flex-start; gap: 10px; padding: 8px 0; border-bottom: 1px solid #f0f0f0; font-size: 0.92rem; }
+  .card-row:last-child { border-bottom: none; padding-bottom: 0; }
+  .card-label { color: var(--brown); font-size: 0.78rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em; min-width: 90px; padding-top: 2px; }
+  .card-value { color: var(--text); flex: 1; }
+  .pflanzen-badge { display: inline-flex; align-items: center; gap: 6px; background: var(--green-pale); color: var(--green-deep); padding: 4px 12px; border-radius: 20px; font-weight: 600; font-size: 0.95rem; }
+
+  /* STATES */
+  .empty-state { text-align: center; padding: 60px 20px; color: var(--brown); }
+  .empty-state .icon { font-size: 56px; margin-bottom: 16px; }
+  .empty-state h3 { font-family: 'Playfair Display', serif; font-size: 1.3rem; margin-bottom: 8px; color: var(--green-deep); }
+  .empty-state p { font-size: 0.9rem; line-height: 1.6; }
+  .loading { text-align: center; padding: 40px; color: var(--green-mid); font-size: 0.95rem; }
+  .results-count { font-size: 0.85rem; color: var(--brown); margin-bottom: 16px; font-weight: 500; }
+
+  /* UPLOAD */
+  .upload-section {
+    margin-top: 40px; background: white; border-radius: 16px; padding: 24px;
+    box-shadow: var(--shadow); border: 2px dashed var(--green-pale); text-align: center;
+  }
+  .upload-section h3 { font-family: 'Playfair Display', serif; color: var(--green-deep); margin-bottom: 8px; }
+  .upload-section p { font-size: 0.85rem; color: var(--brown); margin-bottom: 20px; line-height: 1.5; }
+  .upload-btn {
+    display: inline-block; padding: 12px 28px; background: var(--green-mid); color: white;
+    border: none; border-radius: 12px; font-size: 0.95rem; font-family: 'DM Sans', sans-serif; cursor: pointer; transition: background 0.2s;
+  }
+  .upload-btn:hover { background: var(--green-deep); }
+  #csv-file-input { display: none; }
+  .upload-status { margin-top: 14px; font-size: 0.85rem; font-weight: 500; min-height: 20px; }
+  .csv-hint { margin-top: 16px; background: var(--green-pale); border-radius: 10px; padding: 12px 16px; font-size: 0.8rem; color: var(--green-deep); text-align: left; line-height: 1.6; }
+  .csv-hint strong { display: block; margin-bottom: 4px; }
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="login-icon">🌿</div>
+    <h1>Gärtnerei</h1>
+    <p>Kundensuche – Bitte anmelden</p>
+    <input type="password" id="pw-input" placeholder="Passwort" />
+    <button class="login-btn" onclick="doLogin()">Anmelden</button>
+    <div class="login-error" id="login-error">Falsches Passwort</div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app-screen">
+  <header>
+    <div class="header-top">
+      <div class="header-title">🌿 Kundensuche</div>
+      <button class="logout-btn" onclick="doLogout()">Abmelden</button>
+    </div>
+    <div class="search-box">
+      <input type="text" id="search-input" placeholder="Kundennummer, Name oder Ortsteil..."
+             oninput="doSearch()" onkeydown="if(event.key==='Enter') doSearch()" />
+      <button class="search-btn" onclick="doSearch()">Suchen</button>
+    </div>
+  </header>
+
+  <main>
+    <div id="stats-bar" class="stats-bar"></div>
+    <div id="results-area">
+      <div class="empty-state">
+        <div class="icon">🔍</div>
+        <h3>Kunde suchen</h3>
+        <p>Kundennummer, Name oder Ortsteil eingeben.</p>
+      </div>
+    </div>
+
+    <div class="upload-section">
+      <h3>📁 Daten aktualisieren</h3>
+      <p>CSV aus FileMaker exportieren und hier hochladen.<br>Alle bisherigen Daten werden ersetzt.</p>
+      <button class="upload-btn" onclick="document.getElementById('csv-file-input').click()">CSV hochladen</button>
+      <input type="file" id="csv-file-input" accept=".csv" onchange="handleCSV(event)" />
+      <div class="upload-status" id="upload-status"></div>
+      <div class="csv-hint">
+        <strong>📋 Erwartetes CSV-Format (erste Zeile = Spaltenname):</strong>
+        Kundennummer, Vorname, Nachname, email, Ortsteil<br>
+        <em>Spaltenreihenfolge egal – Groß/Kleinschreibung wird ignoriert</em>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+const PASSWORD     = "gaertnerei2024"; // ← Passwort hier ändern
+const SUPABASE_URL = "https://gkchaujjzhxwbdyefjyh.supabase.co";
+const SUPABASE_KEY = "sb_publishable_TTNE8F3A0GcGaUvI2RmKNQ_3TXECYZx";
+const TABLE        = "kunden";
+const STORAGE_AUTH = "gaertnerei_auth";
+
+// ── INIT ─────────────────────────────────────────────────
+window.onload = () => {
+  document.getElementById("pw-input").addEventListener("keydown", e => { if (e.key === "Enter") doLogin(); });
+  if (localStorage.getItem(STORAGE_AUTH) === "true") {
+    showApp();
+    loadStats();
+  }
+};
+
+// ── AUTH ─────────────────────────────────────────────────
+function doLogin() {
+  if (document.getElementById("pw-input").value === PASSWORD) {
+    localStorage.setItem(STORAGE_AUTH, "true");
+    showApp();
+    loadStats();
+  } else {
+    document.getElementById("login-error").style.display = "block";
+    document.getElementById("pw-input").value = "";
+  }
+}
+function doLogout() { localStorage.removeItem(STORAGE_AUTH); location.reload(); }
+function showApp() {
+  document.getElementById("login-screen").style.display = "none";
+  document.getElementById("app-screen").style.display = "block";
+  setTimeout(() => document.getElementById("search-input").focus(), 100);
+}
+
+// ── SUPABASE ─────────────────────────────────────────────
+async function sb(path, opts = {}) {
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
+    ...opts,
+    headers: {
+      "apikey": SUPABASE_KEY,
+      "Authorization": `Bearer ${SUPABASE_KEY}`,
+      "Content-Type": "application/json",
+      "Prefer": opts.prefer || "return=minimal",
+      ...(opts.extraHeaders || {})
+    }
+  });
+  if (!res.ok) throw new Error(await res.text());
+  const t = await res.text();
+  return t ? JSON.parse(t) : null;
+}
+
+// ── STATS ─────────────────────────────────────────────────
+async function loadStats() {
+  try {
+    const rows = await sb(`${TABLE}?select=pflanzen`);
+    if (!rows) return;
+    const total = rows.length;
+    const totalPflanzen = rows.reduce((s, k) => s + (parseInt(k.pflanzen) || 0), 0);
+    document.getElementById("stats-bar").innerHTML =
+      `<div class="stat-chip">👥 ${total} Kunden</div>` +
+      (totalPflanzen > 0 ? `<div class="stat-chip">🪴 ${totalPflanzen} Pflanzen</div>` : "");
+  } catch(e) { console.warn("Stats:", e); }
+}
+
+// ── SEARCH ────────────────────────────────────────────────
+let timer = null;
+function doSearch() { clearTimeout(timer); timer = setTimeout(runSearch, 350); }
+
+async function runSearch() {
+  const q = document.getElementById("search-input").value.trim();
+  const area = document.getElementById("results-area");
+  if (!q) {
+    area.innerHTML = `<div class="empty-state"><div class="icon">🔍</div><h3>Kunde suchen</h3><p>Kundennummer, Name oder Ortsteil eingeben.</p></div>`;
+    return;
+  }
+  area.innerHTML = `<div class="loading">⏳ Suche läuft...</div>`;
+  try {
+    const enc = encodeURIComponent(q);
+    const rows = await sb(`${TABLE}?or=(kundennummer.ilike.*${enc}*,nachname.ilike.*${enc}*,vorname.ilike.*${enc}*,ortsteil.ilike.*${enc}*)&limit=20`);
+    if (!rows || rows.length === 0) {
+      area.innerHTML = `<div class="empty-state"><div class="icon">🌱</div><h3>Nichts gefunden</h3><p>Kein Kunde mit „${esc(q)}" gefunden.</p></div>`;
+      return;
+    }
+    let html = rows.length > 1 ? `<div class="results-count">${rows.length} Treffer</div>` : "";
+    rows.forEach(k => {
+      html += `<div class="result-card">
+        <div class="card-header">
+          <div class="kunde-name">${esc((k.vorname||"") + " " + (k.nachname||""))}</div>
+          <div class="kunde-nr">#${esc(k.kundennummer||"–")}</div>
+        </div>
+        <div class="card-row"><div class="card-label">Ortsteil</div><div class="card-value">${esc(k.ortsteil||"–")}</div></div>
+        <div class="card-row"><div class="card-label">E-Mail</div><div class="card-value">${k.email ? `<a href="mailto:${esc(k.email)}" style="color:var(--green-mid)">${esc(k.email)}</a>` : "–"}</div></div>
+        ${k.pflanzen ? `<div class="card-row"><div class="card-label">Pflanzen</div><div class="card-value"><span class="pflanzen-badge">🪴 ${esc(k.pflanzen+"")} Pflanzen</span></div></div>` : ""}
+      </div>`;
+    });
+    area.innerHTML = html;
+  } catch(e) {
+    area.innerHTML = `<div class="empty-state"><div class="icon">⚠️</div><h3>Verbindungsfehler</h3><p>${esc(e.message)}</p></div>`;
+  }
+}
+
+// ── CSV UPLOAD ────────────────────────────────────────────
+async function handleCSV(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  setStatus("⏳ Datei wird gelesen...", "var(--brown)");
+  const reader = new FileReader();
+  reader.onload = async (e) => {
+    try {
+      const rows = parseCSV(e.target.result);
+      if (rows.length === 0) { setStatus("❌ Keine Daten gefunden – Format prüfen.", "#c0392b"); return; }
+      setStatus(`⏳ ${rows.length} Einträge werden hochgeladen...`, "var(--brown)");
+
+      // Delete all existing rows
+      await fetch(`${SUPABASE_URL}/rest/v1/${TABLE}?kundennummer=neq.`, {
+        method: "DELETE",
+        headers: { "apikey": SUPABASE_KEY, "Authorization": `Bearer ${SUPABASE_KEY}`, "Prefer": "return=minimal" }
+      });
+
+      // Insert in batches of 500
+      for (let i = 0; i < rows.length; i += 500) {
+        await sb(TABLE, { method: "POST", prefer: "return=minimal", body: JSON.stringify(rows.slice(i, i+500)) });
+      }
+
+      setStatus(`✅ ${rows.length} Kunden erfolgreich gespeichert!`, "var(--green-mid)");
+      loadStats();
+      document.getElementById("search-input").value = "";
+      document.getElementById("results-area").innerHTML = `<div class="empty-state"><div class="icon">🌿</div><h3>Daten aktualisiert</h3><p>${rows.length} Kunden geladen. Jetzt suchen!</p></div>`;
+    } catch(err) { setStatus("❌ Fehler: " + err.message, "#c0392b"); }
+  };
+  reader.readAsText(file, "UTF-8");
+}
+
+function parseCSV(text) {
+  const lines = text.trim().split(/\r?\n/);
+  if (lines.length < 2) return [];
+  const delim = lines[0].includes(";") ? ";" : ",";
+  const headers = lines[0].split(delim).map(h => h.trim().replace(/^["']|["']$/g,"").toLowerCase());
+
+  const map = {};
+  headers.forEach((h, i) => {
+    if (h.includes("kundennummer") || h === "kdnr") map[i] = "kundennummer";
+    else if (h === "vorname") map[i] = "vorname";
+    else if (h === "nachname" || h === "name") map[i] = "nachname";
+    else if (h === "email" || h === "e-mail") map[i] = "email";
+    else if (h === "ortsteil" || h === "ort") map[i] = "ortsteil";
+    else if (h.includes("pflanz") || h.includes("anzahl")) map[i] = "pflanzen";
+  });
+
+  return lines.slice(1).filter(l => l.trim()).map(line => {
+    const cols = line.split(delim);
+    const row = {};
+    Object.entries(map).forEach(([i, col]) => { row[col] = (cols[i]||"").trim().replace(/^["']|["']$/g,""); });
+    return row;
+  }).filter(r => r.kundennummer);
+}
+
+function setStatus(msg, color) {
+  const el = document.getElementById("upload-status");
+  el.textContent = msg; el.style.color = color;
+}
+function esc(s) { return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+</script>
+</body>
+</html>
