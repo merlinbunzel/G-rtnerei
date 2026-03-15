@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Gärtnerei – Kundensuche</title>
+<title>Gärtnerei</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=DM+Sans:wght@300;400;500&display=swap');
 
@@ -16,6 +16,9 @@
     --brown: #8b6f47;
     --text: #1a2e1a;
     --shadow: 0 4px 24px rgba(26,46,26,0.12);
+    --lkw1: #3b82f6;
+    --lkw2: #f59e0b;
+    --lkw3: #ef4444;
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -65,16 +68,16 @@
   .logout-btn:hover, .settings-btn:hover { background: rgba(255,255,255,0.25); }
 
   /* TAB NAV */
-  .tab-nav { display: flex; gap: 4px; margin-bottom: 0; }
+  .tab-nav { display: flex; gap: 4px; }
   .tab-btn {
-    padding: 10px 20px; background: transparent; border: none; color: rgba(255,255,255,0.6);
-    font-size: 0.9rem; font-family: 'DM Sans', sans-serif; font-weight: 500; cursor: pointer;
-    border-bottom: 3px solid transparent; transition: color 0.2s, border-color 0.2s;
+    padding: 10px 16px; background: transparent; border: none; color: rgba(255,255,255,0.6);
+    font-size: 0.85rem; font-family: 'DM Sans', sans-serif; font-weight: 500; cursor: pointer;
+    border-bottom: 3px solid transparent; transition: color 0.2s, border-color 0.2s; white-space: nowrap;
   }
   .tab-btn.active { color: white; border-bottom-color: var(--green-pale); }
   .tab-btn:hover { color: white; }
 
-  /* SEARCH BOX (only in Suche tab) */
+  /* SEARCH BOX */
   .search-box { display: flex; gap: 10px; align-items: center; padding: 14px 0 16px; }
   .search-box input {
     flex: 1; padding: 12px 18px; border: none; border-radius: 12px; font-size: 1rem;
@@ -110,8 +113,6 @@
   .card-label { color: var(--brown); font-size: 0.78rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em; min-width: 90px; padding-top: 2px; }
   .card-value { color: var(--text); flex: 1; }
   .pflanzen-badge { display: inline-flex; align-items: center; gap: 6px; background: var(--green-pale); color: var(--green-deep); padding: 4px 12px; border-radius: 20px; font-weight: 600; font-size: 0.95rem; }
-
-  /* EXPAND */
   .result-card { cursor: pointer; }
   .expand-hint { font-size: 0.78rem; color: var(--brown); margin-top: 12px; text-align: center; }
   .pflanzen-details { display: none; margin-top: 12px; border-top: 1px solid var(--green-pale); padding-top: 12px; }
@@ -146,16 +147,10 @@
   .upload-status { margin-top: 14px; font-size: 0.85rem; font-weight: 500; min-height: 20px; }
   .csv-hint { margin-top: 16px; background: var(--green-pale); border-radius: 10px; padding: 12px 16px; font-size: 0.8rem; color: var(--green-deep); text-align: left; line-height: 1.6; }
   .csv-hint strong { display: block; margin-bottom: 4px; }
-
-  /* SETTINGS PANEL */
   #settings-panel { display: none; }
   #settings-panel.open { display: block; }
 
-  /* ── FAHRPLAN TAB ── */
-  #tab-fahrplan { display: none; }
-  #tab-suche { display: none; }
-
-  /* Sub-tabs */
+  /* FAHRPLAN */
   .sub-tabs { display: flex; gap: 8px; margin-bottom: 24px; }
   .sub-tab-btn {
     flex: 1; padding: 10px; background: white; border: 2px solid var(--green-pale);
@@ -163,8 +158,6 @@
     color: var(--brown); cursor: pointer; transition: all 0.2s; font-weight: 500;
   }
   .sub-tab-btn.active { background: var(--green-mid); color: white; border-color: var(--green-mid); }
-
-  /* Planen form */
   .plan-form { background: white; border-radius: 16px; padding: 24px; box-shadow: var(--shadow); margin-bottom: 24px; }
   .plan-form h3 { font-family: 'Playfair Display', serif; color: var(--green-deep); margin-bottom: 16px; }
   .plan-input-group { margin-bottom: 14px; position: relative; }
@@ -180,10 +173,7 @@
     max-height: 200px; overflow-y: auto; z-index: 20; display: none;
   }
   .autocomplete-list.open { display: block; }
-  .autocomplete-item {
-    padding: 10px 16px; cursor: pointer; font-size: 0.9rem; border-bottom: 1px solid #f0f0f0;
-    transition: background 0.15s;
-  }
+  .autocomplete-item { padding: 10px 16px; cursor: pointer; font-size: 0.9rem; border-bottom: 1px solid #f0f0f0; transition: background 0.15s; }
   .autocomplete-item:last-child { border-bottom: none; }
   .autocomplete-item:hover { background: var(--green-pale); }
   .autocomplete-item .ac-nr { font-size: 0.75rem; color: var(--brown); }
@@ -194,8 +184,6 @@
   }
   .add-btn:hover { background: var(--green-deep); }
   .add-btn:disabled { background: var(--brown); opacity: 0.5; cursor: not-allowed; }
-
-  /* Upcoming list */
   .upcoming-section h3 { font-family: 'Playfair Display', serif; color: var(--green-deep); margin-bottom: 16px; font-size: 1.1rem; }
   .fahrplan-item {
     background: white; border-radius: 14px; padding: 16px 20px; box-shadow: var(--shadow);
@@ -203,17 +191,13 @@
     display: flex; align-items: center; justify-content: space-between; gap: 12px;
     animation: slideIn 0.2s ease;
   }
-  .fahrplan-item.past { border-left-color: var(--brown); opacity: 0.6; }
   .fi-info { flex: 1; }
   .fi-name { font-weight: 500; color: var(--green-deep); font-size: 0.95rem; }
   .fi-date { font-size: 0.8rem; color: var(--brown); margin-top: 2px; }
-  .fi-delete {
-    background: none; border: none; color: var(--brown); font-size: 1.1rem; cursor: pointer;
-    padding: 4px 8px; border-radius: 8px; transition: background 0.15s;
-  }
+  .fi-delete { background: none; border: none; color: var(--brown); font-size: 1.1rem; cursor: pointer; padding: 4px 8px; border-radius: 8px; transition: background 0.15s; }
   .fi-delete:hover { background: #fee2e2; color: #c0392b; }
 
-  /* KALENDER */
+  /* CALENDAR */
   .calendar-nav { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
   .cal-nav-btn {
     background: white; border: 2px solid var(--green-pale); color: var(--green-deep);
@@ -222,24 +206,76 @@
   }
   .cal-nav-btn:hover { background: var(--green-pale); }
   .cal-week-label { font-family: 'Playfair Display', serif; font-size: 1rem; color: var(--green-deep); text-align: center; }
-  .cal-day {
-    background: white; border-radius: 14px; padding: 16px; box-shadow: var(--shadow);
-    margin-bottom: 10px; border-left: 4px solid var(--green-pale);
-  }
+  .cal-day { background: white; border-radius: 14px; padding: 16px; box-shadow: var(--shadow); margin-bottom: 10px; border-left: 4px solid var(--green-pale); }
   .cal-day.has-entries { border-left-color: var(--green-light); }
   .cal-day.today { border-left-color: var(--brown); }
   .cal-day-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
   .cal-day-name { font-weight: 500; color: var(--green-deep); font-size: 0.9rem; }
   .cal-day-date { font-size: 0.78rem; color: var(--brown); }
   .cal-day-empty { font-size: 0.82rem; color: #ccc; font-style: italic; }
-  .cal-entry {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 6px 10px; background: var(--green-pale); border-radius: 8px; margin-top: 6px; font-size: 0.85rem;
-  }
+  .cal-entry { display: flex; align-items: center; justify-content: space-between; padding: 6px 10px; background: var(--green-pale); border-radius: 8px; margin-top: 6px; font-size: 0.85rem; }
   .cal-entry-name { color: var(--green-deep); font-weight: 500; }
   .cal-entry-nr { font-size: 0.75rem; color: var(--brown); }
   .cal-entry-del { background: none; border: none; color: var(--brown); cursor: pointer; font-size: 0.9rem; padding: 2px 6px; border-radius: 6px; }
   .cal-entry-del:hover { background: #fee2e2; color: #c0392b; }
+
+  /* LKW */
+  .lkw-week-nav { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+  .lkw-week-label { font-family: 'Playfair Display', serif; font-size: 1rem; color: var(--green-deep); text-align: center; }
+
+  .lkw-card {
+    background: white; border-radius: 16px; box-shadow: var(--shadow); margin-bottom: 20px; overflow: hidden;
+  }
+  .lkw-card-header {
+    display: flex; align-items: center; gap: 12px; padding: 16px 20px;
+    border-bottom: 2px solid var(--green-pale);
+  }
+  .lkw-badge {
+    width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center;
+    font-size: 1.1rem; font-weight: 700; color: white; flex-shrink: 0;
+  }
+  .lkw1 .lkw-badge { background: var(--lkw1); }
+  .lkw2 .lkw-badge { background: var(--lkw2); }
+  .lkw3 .lkw-badge { background: var(--lkw3); }
+  .lkw-driver-input {
+    flex: 1; border: none; outline: none; font-size: 1rem; font-family: 'DM Sans', sans-serif;
+    font-weight: 500; color: var(--green-deep); background: transparent;
+    border-bottom: 2px dashed transparent; transition: border-color 0.2s; padding: 2px 4px;
+  }
+  .lkw-driver-input:focus { border-bottom-color: var(--green-light); }
+  .lkw-driver-input::placeholder { color: #ccc; font-weight: 400; }
+  .lkw-count { font-size: 0.78rem; color: var(--brown); white-space: nowrap; }
+  .lkw-entries { padding: 12px 20px 16px; }
+  .lkw-entry {
+    display: flex; align-items: center; gap: 10px; padding: 10px 12px;
+    background: #f8f8f8; border-radius: 10px; margin-bottom: 8px; font-size: 0.88rem;
+  }
+  .lkw-entry:last-child { margin-bottom: 0; }
+  .lkw-entry-info { flex: 1; }
+  .lkw-entry-name { font-weight: 500; color: var(--green-deep); }
+  .lkw-entry-date { font-size: 0.76rem; color: var(--brown); margin-top: 1px; }
+  .lkw-entry-del { background: none; border: none; color: #ccc; cursor: pointer; font-size: 0.9rem; padding: 3px 7px; border-radius: 6px; transition: all 0.15s; }
+  .lkw-entry-del:hover { background: #fee2e2; color: #c0392b; }
+  .lkw-empty { font-size: 0.85rem; color: #ccc; font-style: italic; padding: 4px 0 8px; }
+
+  .unassigned-section { margin-bottom: 24px; }
+  .unassigned-section h3 { font-family: 'Playfair Display', serif; color: var(--green-deep); margin-bottom: 12px; font-size: 1rem; }
+  .unassigned-item {
+    background: white; border-radius: 12px; padding: 14px 16px; box-shadow: var(--shadow);
+    border-left: 4px solid #e5e7eb; margin-bottom: 8px; display: flex; align-items: center; gap: 12px;
+    animation: slideIn 0.2s ease;
+  }
+  .unassigned-info { flex: 1; }
+  .unassigned-name { font-weight: 500; color: var(--green-deep); font-size: 0.9rem; }
+  .unassigned-date { font-size: 0.76rem; color: var(--brown); margin-top: 2px; }
+  .lkw-assign-select {
+    border: 2px solid var(--green-pale); border-radius: 10px; padding: 7px 10px;
+    font-size: 0.85rem; font-family: 'DM Sans', sans-serif; color: var(--text);
+    background: white; cursor: pointer; outline: none; transition: border-color 0.2s;
+  }
+  .lkw-assign-select:focus { border-color: var(--green-light); }
+  .unassigned-del { background: none; border: none; color: #ccc; cursor: pointer; font-size: 1rem; padding: 4px 8px; border-radius: 8px; transition: all 0.15s; }
+  .unassigned-del:hover { background: #fee2e2; color: #c0392b; }
 </style>
 </head>
 <body>
@@ -267,10 +303,10 @@
       </div>
     </div>
     <div class="tab-nav">
-      <button class="tab-btn active" id="nav-suche" onclick="switchTab('suche')">🔍 Suche</button>
-      <button class="tab-btn" id="nav-fahrplan" onclick="switchTab('fahrplan')">📅 Fahrplan</button>
+      <button class="tab-btn active" id="nav-suche"     onclick="switchTab('suche')">🔍 Suche</button>
+      <button class="tab-btn"        id="nav-fahrplan"  onclick="switchTab('fahrplan')">📅 Fahrplan</button>
+      <button class="tab-btn"        id="nav-lkw"       onclick="switchTab('lkw')">🚛 LKW</button>
     </div>
-    <!-- Search box only shown in Suche tab -->
     <div id="header-search" class="search-box">
       <input type="text" id="search-input" placeholder="Kundennummer, Name oder Ortsteil..."
              oninput="doSearch()" onkeydown="if(event.key==='Enter') doSearch()" />
@@ -280,7 +316,7 @@
 
   <main>
 
-    <!-- ── SUCHE TAB ── -->
+    <!-- ── SUCHE ── -->
     <div id="tab-suche">
       <div id="stats-bar" class="stats-bar"></div>
       <div id="results-area">
@@ -306,21 +342,19 @@
       </div>
     </div>
 
-    <!-- ── FAHRPLAN TAB ── -->
-    <div id="tab-fahrplan">
+    <!-- ── FAHRPLAN ── -->
+    <div id="tab-fahrplan" style="display:none">
       <div class="sub-tabs">
-        <button class="sub-tab-btn active" id="sub-planen" onclick="switchSubTab('planen')">✏️ Planen</button>
-        <button class="sub-tab-btn" id="sub-kalender" onclick="switchSubTab('kalender')">📆 Kalender</button>
+        <button class="sub-tab-btn active" id="sub-planen"   onclick="switchSubTab('planen')">✏️ Planen</button>
+        <button class="sub-tab-btn"        id="sub-kalender" onclick="switchSubTab('kalender')">📆 Kalender</button>
       </div>
 
-      <!-- Planen -->
       <div id="sub-tab-planen">
         <div class="plan-form">
           <h3>Termin hinzufügen</h3>
           <div class="plan-input-group">
             <label>Kunde</label>
-            <input type="text" id="plan-kunde-input" placeholder="Name oder Kundennummer..." autocomplete="off"
-                   oninput="planKundeSearch()" />
+            <input type="text" id="plan-kunde-input" placeholder="Name oder Kundennummer..." autocomplete="off" oninput="planKundeSearch()" />
             <div class="autocomplete-list" id="plan-autocomplete"></div>
           </div>
           <div class="plan-input-group">
@@ -329,14 +363,12 @@
           </div>
           <button class="add-btn" onclick="addFahrplan()">+ Hinzufügen</button>
         </div>
-
         <div class="upcoming-section">
           <h3>Kommende Termine</h3>
           <div id="upcoming-list"><div class="loading">⏳ Lade Termine...</div></div>
         </div>
       </div>
 
-      <!-- Kalender -->
       <div id="sub-tab-kalender" style="display:none">
         <div class="calendar-nav">
           <button class="cal-nav-btn" onclick="calWeekOffset--; renderCalendar()">← Zurück</button>
@@ -347,25 +379,70 @@
       </div>
     </div>
 
+    <!-- ── LKW ── -->
+    <div id="tab-lkw" style="display:none">
+      <div class="lkw-week-nav">
+        <button class="cal-nav-btn" onclick="lkwWeekOffset--; renderLKW()">← Zurück</button>
+        <div class="lkw-week-label" id="lkw-week-label"></div>
+        <button class="cal-nav-btn" onclick="lkwWeekOffset++; renderLKW()">Weiter →</button>
+      </div>
+
+      <!-- Nicht zugewiesen -->
+      <div class="unassigned-section">
+        <h3>⬜ Nicht zugewiesen</h3>
+        <div id="unassigned-list"></div>
+      </div>
+
+      <!-- 3 LKW Karten -->
+      <div id="lkw1-card" class="lkw-card lkw1">
+        <div class="lkw-card-header">
+          <div class="lkw-badge">1</div>
+          <input class="lkw-driver-input" id="lkw1-driver" placeholder="Fahrername..." onchange="saveDriverNames()" />
+          <span class="lkw-count" id="lkw1-count"></span>
+        </div>
+        <div class="lkw-entries" id="lkw1-entries"></div>
+      </div>
+
+      <div id="lkw2-card" class="lkw-card lkw2">
+        <div class="lkw-card-header">
+          <div class="lkw-badge">2</div>
+          <input class="lkw-driver-input" id="lkw2-driver" placeholder="Fahrername..." onchange="saveDriverNames()" />
+          <span class="lkw-count" id="lkw2-count"></span>
+        </div>
+        <div class="lkw-entries" id="lkw2-entries"></div>
+      </div>
+
+      <div id="lkw3-card" class="lkw-card lkw3">
+        <div class="lkw-card-header">
+          <div class="lkw-badge">3</div>
+          <input class="lkw-driver-input" id="lkw3-driver" placeholder="Fahrername..." onchange="saveDriverNames()" />
+          <span class="lkw-count" id="lkw3-count"></span>
+        </div>
+        <div class="lkw-entries" id="lkw3-entries"></div>
+      </div>
+    </div>
+
   </main>
 </div>
 
 <script>
-const PASSWORD     = "gaertnerei2024";
-const SUPABASE_URL = "https://gkchaujjzhxwbdyefjyh.supabase.co";
-const SUPABASE_KEY = "sb_publishable_TTNE8F3A0GcGaUvI2RmKNQ_3TXECYZx";
-const TABLE        = "kunden";
+const PASSWORD       = "gaertnerei2024";
+const SUPABASE_URL   = "https://gkchaujjzhxwbdyefjyh.supabase.co";
+const SUPABASE_KEY   = "sb_publishable_TTNE8F3A0GcGaUvI2RmKNQ_3TXECYZx";
+const TABLE          = "kunden";
 const FAHRPLAN_TABLE = "fahrplan";
-const STORAGE_AUTH = "gaertnerei_auth";
+const STORAGE_AUTH   = "gaertnerei_auth";
+const STORAGE_DRIVER = "gaertnerei_drivers";
 
-let selectedKunde = null; // { kundennummer, kundenname }
+let selectedKunde = null;
 let calWeekOffset = 0;
+let lkwWeekOffset = 0;
 
-// ── INIT ─────────────────────────────────────────────────
+// ── INIT ──────────────────────────────────────────────────
 window.onload = () => {
   document.getElementById("pw-input").addEventListener("keydown", e => { if (e.key === "Enter") doLogin(); });
-  // Set default date to today
   document.getElementById("plan-datum").value = new Date().toISOString().split("T")[0];
+  loadDriverNames();
   if (localStorage.getItem(STORAGE_AUTH) === "true") {
     showApp();
     loadStats();
@@ -375,12 +452,11 @@ window.onload = () => {
   });
 };
 
-// ── AUTH ─────────────────────────────────────────────────
+// ── AUTH ──────────────────────────────────────────────────
 function doLogin() {
   if (document.getElementById("pw-input").value === PASSWORD) {
     localStorage.setItem(STORAGE_AUTH, "true");
-    showApp();
-    loadStats();
+    showApp(); loadStats();
   } else {
     document.getElementById("login-error").style.display = "block";
     document.getElementById("pw-input").value = "";
@@ -393,31 +469,45 @@ function showApp() {
   switchTab("suche");
 }
 
-// ── TABS ─────────────────────────────────────────────────
+// ── DRIVER NAMES (localStorage) ───────────────────────────
+function saveDriverNames() {
+  const names = {
+    1: document.getElementById("lkw1-driver").value,
+    2: document.getElementById("lkw2-driver").value,
+    3: document.getElementById("lkw3-driver").value
+  };
+  localStorage.setItem(STORAGE_DRIVER, JSON.stringify(names));
+}
+function loadDriverNames() {
+  try {
+    const names = JSON.parse(localStorage.getItem(STORAGE_DRIVER) || "{}");
+    if (names[1]) document.getElementById("lkw1-driver").value = names[1];
+    if (names[2]) document.getElementById("lkw2-driver").value = names[2];
+    if (names[3]) document.getElementById("lkw3-driver").value = names[3];
+  } catch(e) {}
+}
+
+// ── TABS ──────────────────────────────────────────────────
 function switchTab(tab) {
-  document.getElementById("tab-suche").style.display = tab === "suche" ? "block" : "none";
-  document.getElementById("tab-fahrplan").style.display = tab === "fahrplan" ? "block" : "none";
+  ["suche","fahrplan","lkw"].forEach(t => {
+    document.getElementById(`tab-${t}`).style.display = t === tab ? "block" : "none";
+    document.getElementById(`nav-${t}`).classList.toggle("active", t === tab);
+  });
   document.getElementById("header-search").style.display = tab === "suche" ? "flex" : "none";
-  document.getElementById("nav-suche").classList.toggle("active", tab === "suche");
-  document.getElementById("nav-fahrplan").classList.toggle("active", tab === "fahrplan");
-  if (tab === "fahrplan") {
-    loadUpcoming();
-    renderCalendar();
-    setTimeout(() => document.getElementById("plan-kunde-input").focus(), 100);
-  } else {
-    setTimeout(() => document.getElementById("search-input").focus(), 100);
-  }
+  if (tab === "fahrplan") { loadUpcoming(); renderCalendar(); setTimeout(() => document.getElementById("plan-kunde-input").focus(), 100); }
+  if (tab === "suche")    { setTimeout(() => document.getElementById("search-input").focus(), 100); }
+  if (tab === "lkw")      { renderLKW(); }
 }
 
 function switchSubTab(sub) {
-  document.getElementById("sub-tab-planen").style.display = sub === "planen" ? "block" : "none";
+  document.getElementById("sub-tab-planen").style.display   = sub === "planen"   ? "block" : "none";
   document.getElementById("sub-tab-kalender").style.display = sub === "kalender" ? "block" : "none";
-  document.getElementById("sub-planen").classList.toggle("active", sub === "planen");
+  document.getElementById("sub-planen").classList.toggle("active",   sub === "planen");
   document.getElementById("sub-kalender").classList.toggle("active", sub === "kalender");
   if (sub === "kalender") renderCalendar();
 }
 
-// ── SUPABASE ─────────────────────────────────────────────
+// ── SUPABASE ──────────────────────────────────────────────
 async function sb(path, opts = {}) {
   const res = await fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
     ...opts,
@@ -454,28 +544,18 @@ function doSearch() { clearTimeout(timer); timer = setTimeout(runSearch, 350); }
 async function runSearch() {
   const q = document.getElementById("search-input").value.trim();
   const area = document.getElementById("results-area");
-  if (!q) {
-    area.innerHTML = `<div class="empty-state"><div class="icon">🔍</div><h3>Kunde suchen</h3><p>Kundennummer, Name oder Ortsteil eingeben.</p></div>`;
-    return;
-  }
+  if (!q) { area.innerHTML = `<div class="empty-state"><div class="icon">🔍</div><h3>Kunde suchen</h3><p>Kundennummer, Name oder Ortsteil eingeben.</p></div>`; return; }
   area.innerHTML = `<div class="loading">⏳ Suche läuft...</div>`;
   try {
     const enc = encodeURIComponent(q);
     const rows = await sb(`${TABLE}?select=*&or=(kundennummer.ilike.*${enc}*,nachname.ilike.*${enc}*,vorname.ilike.*${enc}*,ortsteil.ilike.*${enc}*)&limit=20`);
-    if (!rows || rows.length === 0) {
-      area.innerHTML = `<div class="empty-state"><div class="icon">🌱</div><h3>Nichts gefunden</h3><p>Kein Kunde mit „${esc(q)}" gefunden.</p></div>`;
-      return;
-    }
+    if (!rows || rows.length === 0) { area.innerHTML = `<div class="empty-state"><div class="icon">🌱</div><h3>Nichts gefunden</h3><p>Kein Kunde mit „${esc(q)}" gefunden.</p></div>`; return; }
     let html = rows.length > 1 ? `<div class="results-count">${rows.length} Treffer</div>` : "";
     rows.forEach(k => {
-      let pflanzenItems = "";
-      let pflanzenCount = 0;
+      let pflanzenItems = "", pflanzenCount = 0;
       for (let i = 1; i <= 12; i++) {
         const val = k[`pflanze${i}`] || k[`pflanze_${i}`] || "";
-        if (val && val.trim()) {
-          pflanzenItems += `<div class="pflanze-item"><div class="p-nr">Pflanze ${i}</div><div class="p-val">${esc(val)}</div></div>`;
-          pflanzenCount++;
-        }
+        if (val && val.trim()) { pflanzenItems += `<div class="pflanze-item"><div class="p-nr">Pflanze ${i}</div><div class="p-val">${esc(val)}</div></div>`; pflanzenCount++; }
       }
       const hasPflanzen = pflanzenCount > 0;
       html += `<div class="result-card" onclick="this.classList.toggle('open')">
@@ -488,23 +568,16 @@ async function runSearch() {
         ${hasPflanzen ? `
         <div class="card-row"><div class="card-label">Pflanzen</div><div class="card-value"><span class="pflanzen-badge">🪴 ${pflanzenCount} Pflanze${pflanzenCount !== 1 ? "n" : ""}</span></div></div>
         <div class="expand-hint">▼ Tippen um Pflanzen anzuzeigen</div>
-        <div class="pflanzen-details"><div class="pflanzen-grid">${pflanzenItems}</div></div>
-        ` : ""}
+        <div class="pflanzen-details"><div class="pflanzen-grid">${pflanzenItems}</div></div>` : ""}
       </div>`;
     });
     area.innerHTML = html;
-  } catch(e) {
-    area.innerHTML = `<div class="empty-state"><div class="icon">⚠️</div><h3>Verbindungsfehler</h3><p>${esc(e.message)}</p></div>`;
-  }
+  } catch(e) { area.innerHTML = `<div class="empty-state"><div class="icon">⚠️</div><h3>Verbindungsfehler</h3><p>${esc(e.message)}</p></div>`; }
 }
 
 // ── FAHRPLAN AUTOCOMPLETE ─────────────────────────────────
 let acTimer = null;
-function planKundeSearch() {
-  selectedKunde = null;
-  clearTimeout(acTimer);
-  acTimer = setTimeout(runAcSearch, 300);
-}
+function planKundeSearch() { selectedKunde = null; clearTimeout(acTimer); acTimer = setTimeout(runAcSearch, 300); }
 
 async function runAcSearch() {
   const q = document.getElementById("plan-kunde-input").value.trim();
@@ -517,9 +590,7 @@ async function runAcSearch() {
     list.innerHTML = rows.map(k => {
       const name = `${k.vorname||""} ${k.nachname||""}`.trim();
       return `<div class="autocomplete-item" onclick="selectKunde('${esc(k.kundennummer)}', '${esc(name)}')">
-        <div>${esc(name)}</div>
-        <div class="ac-nr">#${esc(k.kundennummer)}</div>
-      </div>`;
+        <div>${esc(name)}</div><div class="ac-nr">#${esc(k.kundennummer)}</div></div>`;
     }).join("");
     list.classList.add("open");
   } catch(e) { list.classList.remove("open"); }
@@ -530,11 +601,9 @@ function selectKunde(nr, name) {
   document.getElementById("plan-kunde-input").value = `${name} (#${nr})`;
   closeAutocomplete();
 }
-function closeAutocomplete() {
-  document.getElementById("plan-autocomplete").classList.remove("open");
-}
+function closeAutocomplete() { document.getElementById("plan-autocomplete").classList.remove("open"); }
 
-// ── ADD FAHRPLAN ENTRY ────────────────────────────────────
+// ── ADD FAHRPLAN ──────────────────────────────────────────
 async function addFahrplan() {
   if (!selectedKunde) { alert("Bitte erst einen Kunden aus der Liste auswählen."); return; }
   const datum = document.getElementById("plan-datum").value;
@@ -542,30 +611,23 @@ async function addFahrplan() {
   const btn = document.querySelector(".add-btn");
   btn.disabled = true;
   try {
-    await sb(FAHRPLAN_TABLE, {
-      method: "POST", prefer: "return=minimal",
-      body: JSON.stringify({ kundennummer: selectedKunde.kundennummer, kundenname: selectedKunde.kundenname, datum })
-    });
+    await sb(FAHRPLAN_TABLE, { method: "POST", prefer: "return=minimal", body: JSON.stringify({ kundennummer: selectedKunde.kundennummer, kundenname: selectedKunde.kundenname, datum }) });
     document.getElementById("plan-kunde-input").value = "";
     document.getElementById("plan-datum").value = new Date().toISOString().split("T")[0];
     selectedKunde = null;
-    loadUpcoming();
-    renderCalendar();
+    loadUpcoming(); renderCalendar();
   } catch(e) { alert("Fehler: " + e.message); }
   btn.disabled = false;
 }
 
-// ── LOAD UPCOMING ─────────────────────────────────────────
+// ── UPCOMING ──────────────────────────────────────────────
 async function loadUpcoming() {
   const el = document.getElementById("upcoming-list");
   el.innerHTML = `<div class="loading">⏳</div>`;
   try {
     const today = new Date().toISOString().split("T")[0];
     const rows = await sb(`${FAHRPLAN_TABLE}?datum=gte.${today}&order=datum.asc&limit=50`);
-    if (!rows || rows.length === 0) {
-      el.innerHTML = `<div class="empty-state" style="padding:30px 0"><div class="icon">📅</div><h3>Keine Termine</h3><p>Noch keine Termine geplant.</p></div>`;
-      return;
-    }
+    if (!rows || rows.length === 0) { el.innerHTML = `<div class="empty-state" style="padding:30px 0"><div class="icon">📅</div><h3>Keine Termine</h3><p>Noch keine Termine geplant.</p></div>`; return; }
     el.innerHTML = rows.map(r => `
       <div class="fahrplan-item">
         <div class="fi-info">
@@ -574,75 +636,122 @@ async function loadUpcoming() {
         </div>
         <button class="fi-delete" onclick="deleteFahrplan(${r.id})" title="Löschen">✕</button>
       </div>`).join("");
-  } catch(e) {
-    el.innerHTML = `<div class="empty-state"><div class="icon">⚠️</div><p>${esc(e.message)}</p></div>`;
-  }
+  } catch(e) { el.innerHTML = `<div class="empty-state"><div class="icon">⚠️</div><p>${esc(e.message)}</p></div>`; }
 }
 
 async function deleteFahrplan(id) {
   try {
     await sb(`${FAHRPLAN_TABLE}?id=eq.${id}`, { method: "DELETE" });
-    loadUpcoming();
-    renderCalendar();
+    loadUpcoming(); renderCalendar(); renderLKW();
   } catch(e) { alert("Fehler: " + e.message); }
 }
 
-// ── CALENDAR ─────────────────────────────────────────────
+// ── CALENDAR ──────────────────────────────────────────────
 async function renderCalendar() {
   const area = document.getElementById("calendar-area");
-  // Compute week start (Monday)
-  const now = new Date();
-  const day = now.getDay() || 7;
-  const monday = new Date(now);
-  monday.setDate(now.getDate() - day + 1 + calWeekOffset * 7);
-  monday.setHours(0,0,0,0);
-
-  const sunday = new Date(monday);
-  sunday.setDate(monday.getDate() + 6);
-
-  document.getElementById("cal-week-label").textContent =
-    `${formatDate(monday.toISOString().split("T")[0])} – ${formatDate(sunday.toISOString().split("T")[0])}`;
-
+  const { monday, sunday } = getWeekRange(calWeekOffset);
+  document.getElementById("cal-week-label").textContent = `${formatDate(monday)} – ${formatDate(sunday)}`;
   area.innerHTML = `<div class="loading">⏳</div>`;
   try {
-    const from = monday.toISOString().split("T")[0];
-    const to   = sunday.toISOString().split("T")[0];
-    const rows = await sb(`${FAHRPLAN_TABLE}?datum=gte.${from}&datum=lte.${to}&order=datum.asc`);
-
+    const rows = await sb(`${FAHRPLAN_TABLE}?datum=gte.${monday}&datum=lte.${sunday}&order=datum.asc`);
     const byDay = {};
-    (rows || []).forEach(r => {
-      if (!byDay[r.datum]) byDay[r.datum] = [];
-      byDay[r.datum].push(r);
-    });
-
+    (rows||[]).forEach(r => { if (!byDay[r.datum]) byDay[r.datum] = []; byDay[r.datum].push(r); });
     const dayNames = ["Montag","Dienstag","Mittwoch","Donnerstag","Freitag","Samstag","Sonntag"];
     const todayStr = new Date().toISOString().split("T")[0];
     let html = "";
     for (let i = 0; i < 7; i++) {
-      const d = new Date(monday);
-      d.setDate(monday.getDate() + i);
+      const d = addDays(getMonday(calWeekOffset), i);
       const ds = d.toISOString().split("T")[0];
       const entries = byDay[ds] || [];
       const isToday = ds === todayStr;
       html += `<div class="cal-day ${entries.length ? "has-entries" : ""} ${isToday ? "today" : ""}">
         <div class="cal-day-header">
-          <div class="cal-day-name">${dayNames[i]}${isToday ? " <span style='color:var(--brown);font-size:0.75rem'>(heute)</span>" : ""}</div>
-          <div class="cal-day-date">${ds.split("-").reverse().join(".")}</div>
+          <div class="cal-day-name">${dayNames[i]}${isToday ? ` <span style="color:var(--brown);font-size:0.75rem">(heute)</span>` : ""}</div>
+          <div class="cal-day-date">${formatDate(ds)}</div>
         </div>
-        ${entries.length === 0
-          ? `<div class="cal-day-empty">Keine Termine</div>`
-          : entries.map(r => `
-            <div class="cal-entry">
-              <div><div class="cal-entry-name">${esc(r.kundenname)}</div><div class="cal-entry-nr">#${esc(r.kundennummer)}</div></div>
-              <button class="cal-entry-del" onclick="deleteFahrplan(${r.id})" title="Löschen">✕</button>
-            </div>`).join("")
-        }
+        ${entries.length === 0 ? `<div class="cal-day-empty">Keine Termine</div>` : entries.map(r => `
+          <div class="cal-entry">
+            <div><div class="cal-entry-name">${esc(r.kundenname)}</div><div class="cal-entry-nr">#${esc(r.kundennummer)}</div></div>
+            <button class="cal-entry-del" onclick="deleteFahrplan(${r.id})">✕</button>
+          </div>`).join("")}
       </div>`;
     }
     area.innerHTML = html;
+  } catch(e) { area.innerHTML = `<div class="empty-state"><div class="icon">⚠️</div><p>${esc(e.message)}</p></div>`; }
+}
+
+// ── LKW VIEW ──────────────────────────────────────────────
+async function renderLKW() {
+  const { monday, sunday } = getWeekRange(lkwWeekOffset);
+  document.getElementById("lkw-week-label").textContent = `${formatDate(monday)} – ${formatDate(sunday)}`;
+
+  // Clear all
+  [1,2,3].forEach(n => {
+    document.getElementById(`lkw${n}-entries`).innerHTML = `<div class="loading" style="padding:10px 0">⏳</div>`;
+    document.getElementById(`lkw${n}-count`).textContent = "";
+  });
+  document.getElementById("unassigned-list").innerHTML = `<div class="loading">⏳</div>`;
+
+  try {
+    const rows = await sb(`${FAHRPLAN_TABLE}?datum=gte.${monday}&datum=lte.${sunday}&order=datum.asc`);
+    const all = rows || [];
+
+    const unassigned = all.filter(r => !r.lkw);
+    const byLkw = { 1: all.filter(r => r.lkw === 1), 2: all.filter(r => r.lkw === 2), 3: all.filter(r => r.lkw === 3) };
+
+    // Unassigned
+    const ul = document.getElementById("unassigned-list");
+    if (unassigned.length === 0) {
+      ul.innerHTML = `<div style="font-size:0.85rem;color:#ccc;font-style:italic;padding:4px 0">Alle Kunden sind einem LKW zugewiesen.</div>`;
+    } else {
+      ul.innerHTML = unassigned.map(r => `
+        <div class="unassigned-item">
+          <div class="unassigned-info">
+            <div class="unassigned-name">${esc(r.kundenname)} <span style="font-size:0.76rem;color:var(--brown)">#${esc(r.kundennummer)}</span></div>
+            <div class="unassigned-date">${formatDate(r.datum)}</div>
+          </div>
+          <select class="lkw-assign-select" onchange="assignLKW(${r.id}, this.value)">
+            <option value="">LKW ...</option>
+            <option value="1">🚛 LKW 1</option>
+            <option value="2">🚛 LKW 2</option>
+            <option value="3">🚛 LKW 3</option>
+          </select>
+          <button class="unassigned-del" onclick="deleteFahrplan(${r.id})">✕</button>
+        </div>`).join("");
+    }
+
+    // LKW cards
+    [1,2,3].forEach(n => {
+      const entries = byLkw[n];
+      document.getElementById(`lkw${n}-count`).textContent = entries.length ? `${entries.length} Kunde${entries.length !== 1 ? "n" : ""}` : "";
+      document.getElementById(`lkw${n}-entries`).innerHTML = entries.length === 0
+        ? `<div class="lkw-empty">Keine Kunden diese Woche</div>`
+        : entries.map(r => `
+          <div class="lkw-entry">
+            <div class="lkw-entry-info">
+              <div class="lkw-entry-name">${esc(r.kundenname)} <span style="font-size:0.75rem;color:var(--brown)">#${esc(r.kundennummer)}</span></div>
+              <div class="lkw-entry-date">${formatDate(r.datum)}</div>
+            </div>
+            <select class="lkw-assign-select" onchange="assignLKW(${r.id}, this.value)" style="font-size:0.8rem;padding:5px 8px">
+              <option value="1" ${r.lkw===1?"selected":""}>LKW 1</option>
+              <option value="2" ${r.lkw===2?"selected":""}>LKW 2</option>
+              <option value="3" ${r.lkw===3?"selected":""}>LKW 3</option>
+              <option value="">Entfernen</option>
+            </select>
+            <button class="lkw-entry-del" onclick="deleteFahrplan(${r.id})">✕</button>
+          </div>`).join("");
+    });
   } catch(e) {
-    area.innerHTML = `<div class="empty-state"><div class="icon">⚠️</div><p>${esc(e.message)}</p></div>`;
+    document.getElementById("unassigned-list").innerHTML = `<div class="empty-state"><div class="icon">⚠️</div><p>${esc(e.message)}</p></div>`;
   }
+}
+
+async function assignLKW(id, lkwVal) {
+  const lkw = lkwVal === "" ? null : parseInt(lkwVal);
+  try {
+    await sb(`${FAHRPLAN_TABLE}?id=eq.${id}`, { method: "PATCH", prefer: "return=minimal", body: JSON.stringify({ lkw }) });
+    renderLKW();
+  } catch(e) { alert("Fehler: " + e.message); }
 }
 
 // ── CSV UPLOAD ────────────────────────────────────────────
@@ -656,17 +765,14 @@ async function handleCSV(event) {
       const rows = parseCSV(e.target.result);
       if (rows.length === 0) { setStatus("❌ Keine Daten gefunden – Format prüfen.", "#c0392b"); return; }
       setStatus(`⏳ ${rows.length} Einträge werden hochgeladen...`, "var(--brown)");
-
       const delRes = await fetch(`${SUPABASE_URL}/rest/v1/${TABLE}?id=gte.0`, {
         method: "DELETE",
         headers: { "apikey": SUPABASE_KEY, "Authorization": `Bearer ${SUPABASE_KEY}`, "Prefer": "return=minimal" }
       });
       if (!delRes.ok) throw new Error("Löschen fehlgeschlagen: " + await delRes.text());
-
       for (let i = 0; i < rows.length; i += 500) {
         await sb(TABLE, { method: "POST", prefer: "return=minimal", body: JSON.stringify(rows.slice(i, i+500)) });
       }
-
       setStatus(`✅ ${rows.length} Kunden erfolgreich gespeichert!`, "var(--green-mid)");
       loadStats();
       document.getElementById("search-input").value = "";
@@ -690,8 +796,7 @@ function parseCSV(text) {
     else if (h === "ortsteil" || h === "ort") map[i] = "ortsteil";
     else if (h.includes("pflanz") || h.includes("anzahl")) {
       const m = h.match(/(\d+)$/);
-      if (m) map[i] = `pflanze${m[1]}`;
-      else map[i] = "pflanzen";
+      if (m) map[i] = `pflanze${m[1]}`; else map[i] = "pflanzen";
     }
   });
   return lines.slice(1).filter(l => l.trim()).map(line => {
@@ -703,19 +808,24 @@ function parseCSV(text) {
 }
 
 // ── HELPERS ───────────────────────────────────────────────
-function toggleSettings() {
-  document.getElementById("settings-panel").classList.toggle("open");
+function getMonday(offset = 0) {
+  const now = new Date();
+  const day = now.getDay() || 7;
+  const mon = new Date(now);
+  mon.setDate(now.getDate() - day + 1 + offset * 7);
+  mon.setHours(0,0,0,0);
+  return mon;
 }
-function setStatus(msg, color) {
-  const el = document.getElementById("upload-status");
-  el.textContent = msg; el.style.color = color;
+function addDays(date, n) { const d = new Date(date); d.setDate(d.getDate() + n); return d; }
+function getWeekRange(offset) {
+  const mon = getMonday(offset);
+  const sun = addDays(mon, 6);
+  return { monday: mon.toISOString().split("T")[0], sunday: sun.toISOString().split("T")[0] };
 }
+function toggleSettings() { document.getElementById("settings-panel").classList.toggle("open"); }
+function setStatus(msg, color) { const el = document.getElementById("upload-status"); el.textContent = msg; el.style.color = color; }
 function esc(s) { return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
-function formatDate(ds) {
-  if (!ds) return "";
-  const [y, m, d] = ds.split("-");
-  return `${d}.${m}.${y}`;
-}
+function formatDate(ds) { if (!ds) return ""; const [y,m,d] = ds.split("-"); return `${d}.${m}.${y}`; }
 </script>
 </body>
 </html>
