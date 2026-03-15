@@ -52,10 +52,10 @@
   /* APP */
   #app-screen { display: none; min-height: 100vh; }
   header {
-    background: var(--green-deep); color: white; padding: 20px 24px 16px;
+    background: var(--green-deep); color: white; padding: 20px 24px 0;
     position: sticky; top: 0; z-index: 10; box-shadow: 0 2px 12px rgba(0,0,0,0.2);
   }
-  .header-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+  .header-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
   .header-title { font-family: 'Playfair Display', serif; font-size: 1.3rem; display: flex; align-items: center; gap: 8px; }
   .header-btns { display: flex; gap: 8px; }
   .logout-btn, .settings-btn {
@@ -64,10 +64,18 @@
   }
   .logout-btn:hover, .settings-btn:hover { background: rgba(255,255,255,0.25); }
 
-  /* SETTINGS PANEL */
-  #settings-panel { display: none; }
-  #settings-panel.open { display: block; }
-  .search-box { display: flex; gap: 10px; align-items: center; }
+  /* TAB NAV */
+  .tab-nav { display: flex; gap: 4px; margin-bottom: 0; }
+  .tab-btn {
+    padding: 10px 20px; background: transparent; border: none; color: rgba(255,255,255,0.6);
+    font-size: 0.9rem; font-family: 'DM Sans', sans-serif; font-weight: 500; cursor: pointer;
+    border-bottom: 3px solid transparent; transition: color 0.2s, border-color 0.2s;
+  }
+  .tab-btn.active { color: white; border-bottom-color: var(--green-pale); }
+  .tab-btn:hover { color: white; }
+
+  /* SEARCH BOX (only in Suche tab) */
+  .search-box { display: flex; gap: 10px; align-items: center; padding: 14px 0 16px; }
   .search-box input {
     flex: 1; padding: 12px 18px; border: none; border-radius: 12px; font-size: 1rem;
     font-family: 'DM Sans', sans-serif; background: rgba(255,255,255,0.15); color: white; outline: none; transition: background 0.2s;
@@ -138,6 +146,100 @@
   .upload-status { margin-top: 14px; font-size: 0.85rem; font-weight: 500; min-height: 20px; }
   .csv-hint { margin-top: 16px; background: var(--green-pale); border-radius: 10px; padding: 12px 16px; font-size: 0.8rem; color: var(--green-deep); text-align: left; line-height: 1.6; }
   .csv-hint strong { display: block; margin-bottom: 4px; }
+
+  /* SETTINGS PANEL */
+  #settings-panel { display: none; }
+  #settings-panel.open { display: block; }
+
+  /* ── FAHRPLAN TAB ── */
+  #tab-fahrplan { display: none; }
+  #tab-suche { display: none; }
+
+  /* Sub-tabs */
+  .sub-tabs { display: flex; gap: 8px; margin-bottom: 24px; }
+  .sub-tab-btn {
+    flex: 1; padding: 10px; background: white; border: 2px solid var(--green-pale);
+    border-radius: 12px; font-size: 0.9rem; font-family: 'DM Sans', sans-serif;
+    color: var(--brown); cursor: pointer; transition: all 0.2s; font-weight: 500;
+  }
+  .sub-tab-btn.active { background: var(--green-mid); color: white; border-color: var(--green-mid); }
+
+  /* Planen form */
+  .plan-form { background: white; border-radius: 16px; padding: 24px; box-shadow: var(--shadow); margin-bottom: 24px; }
+  .plan-form h3 { font-family: 'Playfair Display', serif; color: var(--green-deep); margin-bottom: 16px; }
+  .plan-input-group { margin-bottom: 14px; position: relative; }
+  .plan-input-group label { display: block; font-size: 0.78rem; font-weight: 500; color: var(--brown); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px; }
+  .plan-input-group input {
+    width: 100%; padding: 12px 16px; border: 2px solid var(--green-pale); border-radius: 12px;
+    font-size: 0.95rem; font-family: 'DM Sans', sans-serif; color: var(--text); outline: none; background: white; transition: border-color 0.2s;
+  }
+  .plan-input-group input:focus { border-color: var(--green-light); }
+  .autocomplete-list {
+    position: absolute; top: 100%; left: 0; right: 0; background: white;
+    border: 2px solid var(--green-pale); border-top: none; border-radius: 0 0 12px 12px;
+    max-height: 200px; overflow-y: auto; z-index: 20; display: none;
+  }
+  .autocomplete-list.open { display: block; }
+  .autocomplete-item {
+    padding: 10px 16px; cursor: pointer; font-size: 0.9rem; border-bottom: 1px solid #f0f0f0;
+    transition: background 0.15s;
+  }
+  .autocomplete-item:last-child { border-bottom: none; }
+  .autocomplete-item:hover { background: var(--green-pale); }
+  .autocomplete-item .ac-nr { font-size: 0.75rem; color: var(--brown); }
+  .add-btn {
+    width: 100%; padding: 13px; background: var(--green-mid); color: white; border: none;
+    border-radius: 12px; font-size: 1rem; font-family: 'DM Sans', sans-serif; font-weight: 500;
+    cursor: pointer; transition: background 0.2s; margin-top: 4px;
+  }
+  .add-btn:hover { background: var(--green-deep); }
+  .add-btn:disabled { background: var(--brown); opacity: 0.5; cursor: not-allowed; }
+
+  /* Upcoming list */
+  .upcoming-section h3 { font-family: 'Playfair Display', serif; color: var(--green-deep); margin-bottom: 16px; font-size: 1.1rem; }
+  .fahrplan-item {
+    background: white; border-radius: 14px; padding: 16px 20px; box-shadow: var(--shadow);
+    border-left: 4px solid var(--green-light); margin-bottom: 10px;
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    animation: slideIn 0.2s ease;
+  }
+  .fahrplan-item.past { border-left-color: var(--brown); opacity: 0.6; }
+  .fi-info { flex: 1; }
+  .fi-name { font-weight: 500; color: var(--green-deep); font-size: 0.95rem; }
+  .fi-date { font-size: 0.8rem; color: var(--brown); margin-top: 2px; }
+  .fi-delete {
+    background: none; border: none; color: var(--brown); font-size: 1.1rem; cursor: pointer;
+    padding: 4px 8px; border-radius: 8px; transition: background 0.15s;
+  }
+  .fi-delete:hover { background: #fee2e2; color: #c0392b; }
+
+  /* KALENDER */
+  .calendar-nav { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+  .cal-nav-btn {
+    background: white; border: 2px solid var(--green-pale); color: var(--green-deep);
+    padding: 8px 16px; border-radius: 10px; cursor: pointer; font-size: 0.9rem;
+    font-family: 'DM Sans', sans-serif; transition: background 0.2s;
+  }
+  .cal-nav-btn:hover { background: var(--green-pale); }
+  .cal-week-label { font-family: 'Playfair Display', serif; font-size: 1rem; color: var(--green-deep); text-align: center; }
+  .cal-day {
+    background: white; border-radius: 14px; padding: 16px; box-shadow: var(--shadow);
+    margin-bottom: 10px; border-left: 4px solid var(--green-pale);
+  }
+  .cal-day.has-entries { border-left-color: var(--green-light); }
+  .cal-day.today { border-left-color: var(--brown); }
+  .cal-day-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+  .cal-day-name { font-weight: 500; color: var(--green-deep); font-size: 0.9rem; }
+  .cal-day-date { font-size: 0.78rem; color: var(--brown); }
+  .cal-day-empty { font-size: 0.82rem; color: #ccc; font-style: italic; }
+  .cal-entry {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 6px 10px; background: var(--green-pale); border-radius: 8px; margin-top: 6px; font-size: 0.85rem;
+  }
+  .cal-entry-name { color: var(--green-deep); font-weight: 500; }
+  .cal-entry-nr { font-size: 0.75rem; color: var(--brown); }
+  .cal-entry-del { background: none; border: none; color: var(--brown); cursor: pointer; font-size: 0.9rem; padding: 2px 6px; border-radius: 6px; }
+  .cal-entry-del:hover { background: #fee2e2; color: #c0392b; }
 </style>
 </head>
 <body>
@@ -158,13 +260,18 @@
 <div id="app-screen">
   <header>
     <div class="header-top">
-      <div class="header-title">🌿 Kundensuche</div>
+      <div class="header-title">🌿 Gärtnerei</div>
       <div class="header-btns">
         <button class="settings-btn" onclick="toggleSettings()">⚙️</button>
         <button class="logout-btn" onclick="doLogout()">Abmelden</button>
       </div>
     </div>
-    <div class="search-box">
+    <div class="tab-nav">
+      <button class="tab-btn active" id="nav-suche" onclick="switchTab('suche')">🔍 Suche</button>
+      <button class="tab-btn" id="nav-fahrplan" onclick="switchTab('fahrplan')">📅 Fahrplan</button>
+    </div>
+    <!-- Search box only shown in Suche tab -->
+    <div id="header-search" class="search-box">
       <input type="text" id="search-input" placeholder="Kundennummer, Name oder Ortsteil..."
              oninput="doSearch()" onkeydown="if(event.key==='Enter') doSearch()" />
       <button class="search-btn" onclick="doSearch()">Suchen</button>
@@ -172,46 +279,100 @@
   </header>
 
   <main>
-    <div id="stats-bar" class="stats-bar"></div>
-    <div id="results-area">
-      <div class="empty-state">
-        <div class="icon">🔍</div>
-        <h3>Kunde suchen</h3>
-        <p>Kundennummer, Name oder Ortsteil eingeben.</p>
-      </div>
-    </div>
 
-    <div id="settings-panel">
-      <div class="upload-section">
-        <h3>📁 Daten aktualisieren</h3>
-        <p>CSV aus FileMaker exportieren und hier hochladen.<br>Alle bisherigen Daten werden ersetzt.</p>
-        <button class="upload-btn" onclick="document.getElementById('csv-file-input').click()">CSV hochladen</button>
-        <input type="file" id="csv-file-input" accept=".csv" onchange="handleCSV(event)" />
-        <div class="upload-status" id="upload-status"></div>
-        <div class="csv-hint">
-          <strong>📋 Erwartetes CSV-Format (erste Zeile = Spaltenname):</strong>
-          Kundennummer, Vorname, Nachname, email, Ortsteil<br>
-          <em>Spaltenreihenfolge egal – Groß/Kleinschreibung wird ignoriert</em>
+    <!-- ── SUCHE TAB ── -->
+    <div id="tab-suche">
+      <div id="stats-bar" class="stats-bar"></div>
+      <div id="results-area">
+        <div class="empty-state">
+          <div class="icon">🔍</div>
+          <h3>Kunde suchen</h3>
+          <p>Kundennummer, Name oder Ortsteil eingeben.</p>
+        </div>
+      </div>
+      <div id="settings-panel">
+        <div class="upload-section">
+          <h3>📁 Daten aktualisieren</h3>
+          <p>CSV aus FileMaker exportieren und hier hochladen.<br>Alle bisherigen Daten werden ersetzt.</p>
+          <button class="upload-btn" onclick="document.getElementById('csv-file-input').click()">CSV hochladen</button>
+          <input type="file" id="csv-file-input" accept=".csv" onchange="handleCSV(event)" />
+          <div class="upload-status" id="upload-status"></div>
+          <div class="csv-hint">
+            <strong>📋 Erwartetes CSV-Format (erste Zeile = Spaltenname):</strong>
+            Kundennummer, Vorname, Nachname, email, Ortsteil<br>
+            <em>Spaltenreihenfolge egal – Groß/Kleinschreibung wird ignoriert</em>
+          </div>
         </div>
       </div>
     </div>
+
+    <!-- ── FAHRPLAN TAB ── -->
+    <div id="tab-fahrplan">
+      <div class="sub-tabs">
+        <button class="sub-tab-btn active" id="sub-planen" onclick="switchSubTab('planen')">✏️ Planen</button>
+        <button class="sub-tab-btn" id="sub-kalender" onclick="switchSubTab('kalender')">📆 Kalender</button>
+      </div>
+
+      <!-- Planen -->
+      <div id="sub-tab-planen">
+        <div class="plan-form">
+          <h3>Termin hinzufügen</h3>
+          <div class="plan-input-group">
+            <label>Kunde</label>
+            <input type="text" id="plan-kunde-input" placeholder="Name oder Kundennummer..." autocomplete="off"
+                   oninput="planKundeSearch()" />
+            <div class="autocomplete-list" id="plan-autocomplete"></div>
+          </div>
+          <div class="plan-input-group">
+            <label>Datum</label>
+            <input type="date" id="plan-datum" />
+          </div>
+          <button class="add-btn" onclick="addFahrplan()">+ Hinzufügen</button>
+        </div>
+
+        <div class="upcoming-section">
+          <h3>Kommende Termine</h3>
+          <div id="upcoming-list"><div class="loading">⏳ Lade Termine...</div></div>
+        </div>
+      </div>
+
+      <!-- Kalender -->
+      <div id="sub-tab-kalender" style="display:none">
+        <div class="calendar-nav">
+          <button class="cal-nav-btn" onclick="calWeekOffset--; renderCalendar()">← Zurück</button>
+          <div class="cal-week-label" id="cal-week-label"></div>
+          <button class="cal-nav-btn" onclick="calWeekOffset++; renderCalendar()">Weiter →</button>
+        </div>
+        <div id="calendar-area"></div>
+      </div>
+    </div>
+
   </main>
 </div>
 
 <script>
-const PASSWORD     = "gaertnerei2024"; // ← Passwort hier ändern
+const PASSWORD     = "gaertnerei2024";
 const SUPABASE_URL = "https://gkchaujjzhxwbdyefjyh.supabase.co";
 const SUPABASE_KEY = "sb_publishable_TTNE8F3A0GcGaUvI2RmKNQ_3TXECYZx";
 const TABLE        = "kunden";
+const FAHRPLAN_TABLE = "fahrplan";
 const STORAGE_AUTH = "gaertnerei_auth";
+
+let selectedKunde = null; // { kundennummer, kundenname }
+let calWeekOffset = 0;
 
 // ── INIT ─────────────────────────────────────────────────
 window.onload = () => {
   document.getElementById("pw-input").addEventListener("keydown", e => { if (e.key === "Enter") doLogin(); });
+  // Set default date to today
+  document.getElementById("plan-datum").value = new Date().toISOString().split("T")[0];
   if (localStorage.getItem(STORAGE_AUTH) === "true") {
     showApp();
     loadStats();
   }
+  document.addEventListener("click", e => {
+    if (!e.target.closest(".plan-input-group")) closeAutocomplete();
+  });
 };
 
 // ── AUTH ─────────────────────────────────────────────────
@@ -229,7 +390,31 @@ function doLogout() { localStorage.removeItem(STORAGE_AUTH); location.reload(); 
 function showApp() {
   document.getElementById("login-screen").style.display = "none";
   document.getElementById("app-screen").style.display = "block";
-  setTimeout(() => document.getElementById("search-input").focus(), 100);
+  switchTab("suche");
+}
+
+// ── TABS ─────────────────────────────────────────────────
+function switchTab(tab) {
+  document.getElementById("tab-suche").style.display = tab === "suche" ? "block" : "none";
+  document.getElementById("tab-fahrplan").style.display = tab === "fahrplan" ? "block" : "none";
+  document.getElementById("header-search").style.display = tab === "suche" ? "flex" : "none";
+  document.getElementById("nav-suche").classList.toggle("active", tab === "suche");
+  document.getElementById("nav-fahrplan").classList.toggle("active", tab === "fahrplan");
+  if (tab === "fahrplan") {
+    loadUpcoming();
+    renderCalendar();
+    setTimeout(() => document.getElementById("plan-kunde-input").focus(), 100);
+  } else {
+    setTimeout(() => document.getElementById("search-input").focus(), 100);
+  }
+}
+
+function switchSubTab(sub) {
+  document.getElementById("sub-tab-planen").style.display = sub === "planen" ? "block" : "none";
+  document.getElementById("sub-tab-kalender").style.display = sub === "kalender" ? "block" : "none";
+  document.getElementById("sub-planen").classList.toggle("active", sub === "planen");
+  document.getElementById("sub-kalender").classList.toggle("active", sub === "kalender");
+  if (sub === "kalender") renderCalendar();
 }
 
 // ── SUPABASE ─────────────────────────────────────────────
@@ -283,7 +468,6 @@ async function runSearch() {
     }
     let html = rows.length > 1 ? `<div class="results-count">${rows.length} Treffer</div>` : "";
     rows.forEach(k => {
-      // Collect pflanze1–pflanze12
       let pflanzenItems = "";
       let pflanzenCount = 0;
       for (let i = 1; i <= 12; i++) {
@@ -294,7 +478,6 @@ async function runSearch() {
         }
       }
       const hasPflanzen = pflanzenCount > 0;
-
       html += `<div class="result-card" onclick="this.classList.toggle('open')">
         <div class="card-header">
           <div class="kunde-name">${esc((k.vorname||"") + " " + (k.nachname||""))}</div>
@@ -315,6 +498,153 @@ async function runSearch() {
   }
 }
 
+// ── FAHRPLAN AUTOCOMPLETE ─────────────────────────────────
+let acTimer = null;
+function planKundeSearch() {
+  selectedKunde = null;
+  clearTimeout(acTimer);
+  acTimer = setTimeout(runAcSearch, 300);
+}
+
+async function runAcSearch() {
+  const q = document.getElementById("plan-kunde-input").value.trim();
+  const list = document.getElementById("plan-autocomplete");
+  if (!q) { list.classList.remove("open"); return; }
+  try {
+    const enc = encodeURIComponent(q);
+    const rows = await sb(`${TABLE}?select=kundennummer,vorname,nachname&or=(kundennummer.ilike.*${enc}*,nachname.ilike.*${enc}*,vorname.ilike.*${enc}*)&limit=8`);
+    if (!rows || rows.length === 0) { list.classList.remove("open"); return; }
+    list.innerHTML = rows.map(k => {
+      const name = `${k.vorname||""} ${k.nachname||""}`.trim();
+      return `<div class="autocomplete-item" onclick="selectKunde('${esc(k.kundennummer)}', '${esc(name)}')">
+        <div>${esc(name)}</div>
+        <div class="ac-nr">#${esc(k.kundennummer)}</div>
+      </div>`;
+    }).join("");
+    list.classList.add("open");
+  } catch(e) { list.classList.remove("open"); }
+}
+
+function selectKunde(nr, name) {
+  selectedKunde = { kundennummer: nr, kundenname: name };
+  document.getElementById("plan-kunde-input").value = `${name} (#${nr})`;
+  closeAutocomplete();
+}
+function closeAutocomplete() {
+  document.getElementById("plan-autocomplete").classList.remove("open");
+}
+
+// ── ADD FAHRPLAN ENTRY ────────────────────────────────────
+async function addFahrplan() {
+  if (!selectedKunde) { alert("Bitte erst einen Kunden aus der Liste auswählen."); return; }
+  const datum = document.getElementById("plan-datum").value;
+  if (!datum) { alert("Bitte ein Datum auswählen."); return; }
+  const btn = document.querySelector(".add-btn");
+  btn.disabled = true;
+  try {
+    await sb(FAHRPLAN_TABLE, {
+      method: "POST", prefer: "return=minimal",
+      body: JSON.stringify({ kundennummer: selectedKunde.kundennummer, kundenname: selectedKunde.kundenname, datum })
+    });
+    document.getElementById("plan-kunde-input").value = "";
+    document.getElementById("plan-datum").value = new Date().toISOString().split("T")[0];
+    selectedKunde = null;
+    loadUpcoming();
+    renderCalendar();
+  } catch(e) { alert("Fehler: " + e.message); }
+  btn.disabled = false;
+}
+
+// ── LOAD UPCOMING ─────────────────────────────────────────
+async function loadUpcoming() {
+  const el = document.getElementById("upcoming-list");
+  el.innerHTML = `<div class="loading">⏳</div>`;
+  try {
+    const today = new Date().toISOString().split("T")[0];
+    const rows = await sb(`${FAHRPLAN_TABLE}?datum=gte.${today}&order=datum.asc&limit=50`);
+    if (!rows || rows.length === 0) {
+      el.innerHTML = `<div class="empty-state" style="padding:30px 0"><div class="icon">📅</div><h3>Keine Termine</h3><p>Noch keine Termine geplant.</p></div>`;
+      return;
+    }
+    el.innerHTML = rows.map(r => `
+      <div class="fahrplan-item">
+        <div class="fi-info">
+          <div class="fi-name">${esc(r.kundenname)} <span style="font-size:0.78rem;color:var(--brown)">#${esc(r.kundennummer)}</span></div>
+          <div class="fi-date">${formatDate(r.datum)}</div>
+        </div>
+        <button class="fi-delete" onclick="deleteFahrplan(${r.id})" title="Löschen">✕</button>
+      </div>`).join("");
+  } catch(e) {
+    el.innerHTML = `<div class="empty-state"><div class="icon">⚠️</div><p>${esc(e.message)}</p></div>`;
+  }
+}
+
+async function deleteFahrplan(id) {
+  try {
+    await sb(`${FAHRPLAN_TABLE}?id=eq.${id}`, { method: "DELETE" });
+    loadUpcoming();
+    renderCalendar();
+  } catch(e) { alert("Fehler: " + e.message); }
+}
+
+// ── CALENDAR ─────────────────────────────────────────────
+async function renderCalendar() {
+  const area = document.getElementById("calendar-area");
+  // Compute week start (Monday)
+  const now = new Date();
+  const day = now.getDay() || 7;
+  const monday = new Date(now);
+  monday.setDate(now.getDate() - day + 1 + calWeekOffset * 7);
+  monday.setHours(0,0,0,0);
+
+  const sunday = new Date(monday);
+  sunday.setDate(monday.getDate() + 6);
+
+  document.getElementById("cal-week-label").textContent =
+    `${formatDate(monday.toISOString().split("T")[0])} – ${formatDate(sunday.toISOString().split("T")[0])}`;
+
+  area.innerHTML = `<div class="loading">⏳</div>`;
+  try {
+    const from = monday.toISOString().split("T")[0];
+    const to   = sunday.toISOString().split("T")[0];
+    const rows = await sb(`${FAHRPLAN_TABLE}?datum=gte.${from}&datum=lte.${to}&order=datum.asc`);
+
+    const byDay = {};
+    (rows || []).forEach(r => {
+      if (!byDay[r.datum]) byDay[r.datum] = [];
+      byDay[r.datum].push(r);
+    });
+
+    const dayNames = ["Montag","Dienstag","Mittwoch","Donnerstag","Freitag","Samstag","Sonntag"];
+    const todayStr = new Date().toISOString().split("T")[0];
+    let html = "";
+    for (let i = 0; i < 7; i++) {
+      const d = new Date(monday);
+      d.setDate(monday.getDate() + i);
+      const ds = d.toISOString().split("T")[0];
+      const entries = byDay[ds] || [];
+      const isToday = ds === todayStr;
+      html += `<div class="cal-day ${entries.length ? "has-entries" : ""} ${isToday ? "today" : ""}">
+        <div class="cal-day-header">
+          <div class="cal-day-name">${dayNames[i]}${isToday ? " <span style='color:var(--brown);font-size:0.75rem'>(heute)</span>" : ""}</div>
+          <div class="cal-day-date">${ds.split("-").reverse().join(".")}</div>
+        </div>
+        ${entries.length === 0
+          ? `<div class="cal-day-empty">Keine Termine</div>`
+          : entries.map(r => `
+            <div class="cal-entry">
+              <div><div class="cal-entry-name">${esc(r.kundenname)}</div><div class="cal-entry-nr">#${esc(r.kundennummer)}</div></div>
+              <button class="cal-entry-del" onclick="deleteFahrplan(${r.id})" title="Löschen">✕</button>
+            </div>`).join("")
+        }
+      </div>`;
+    }
+    area.innerHTML = html;
+  } catch(e) {
+    area.innerHTML = `<div class="empty-state"><div class="icon">⚠️</div><p>${esc(e.message)}</p></div>`;
+  }
+}
+
 // ── CSV UPLOAD ────────────────────────────────────────────
 async function handleCSV(event) {
   const file = event.target.files[0];
@@ -327,14 +657,12 @@ async function handleCSV(event) {
       if (rows.length === 0) { setStatus("❌ Keine Daten gefunden – Format prüfen.", "#c0392b"); return; }
       setStatus(`⏳ ${rows.length} Einträge werden hochgeladen...`, "var(--brown)");
 
-      // Delete all existing rows
       const delRes = await fetch(`${SUPABASE_URL}/rest/v1/${TABLE}?id=gte.0`, {
         method: "DELETE",
         headers: { "apikey": SUPABASE_KEY, "Authorization": `Bearer ${SUPABASE_KEY}`, "Prefer": "return=minimal" }
       });
       if (!delRes.ok) throw new Error("Löschen fehlgeschlagen: " + await delRes.text());
 
-      // Insert in batches of 500
       for (let i = 0; i < rows.length; i += 500) {
         await sb(TABLE, { method: "POST", prefer: "return=minimal", body: JSON.stringify(rows.slice(i, i+500)) });
       }
@@ -353,7 +681,6 @@ function parseCSV(text) {
   if (lines.length < 2) return [];
   const delim = lines[0].includes(";") ? ";" : ",";
   const headers = lines[0].split(delim).map(h => h.trim().replace(/^["']|["']$/g,"").toLowerCase());
-
   const map = {};
   headers.forEach((h, i) => {
     if (h.includes("kundennummer") || h === "kdnr") map[i] = "kundennummer";
@@ -367,7 +694,6 @@ function parseCSV(text) {
       else map[i] = "pflanzen";
     }
   });
-
   return lines.slice(1).filter(l => l.trim()).map(line => {
     const cols = line.split(delim);
     const row = {};
@@ -376,15 +702,20 @@ function parseCSV(text) {
   }).filter(r => r.kundennummer);
 }
 
+// ── HELPERS ───────────────────────────────────────────────
 function toggleSettings() {
   document.getElementById("settings-panel").classList.toggle("open");
 }
-
 function setStatus(msg, color) {
   const el = document.getElementById("upload-status");
   el.textContent = msg; el.style.color = color;
 }
 function esc(s) { return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+function formatDate(ds) {
+  if (!ds) return "";
+  const [y, m, d] = ds.split("-");
+  return `${d}.${m}.${y}`;
+}
 </script>
 </body>
 </html>
