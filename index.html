@@ -98,6 +98,17 @@
   .card-value { color: var(--text); flex: 1; }
   .pflanzen-badge { display: inline-flex; align-items: center; gap: 6px; background: var(--green-pale); color: var(--green-deep); padding: 4px 12px; border-radius: 20px; font-weight: 600; font-size: 0.95rem; }
 
+  /* EXPAND */
+  .result-card { cursor: pointer; }
+  .expand-hint { font-size: 0.78rem; color: var(--brown); margin-top: 12px; text-align: center; }
+  .pflanzen-details { display: none; margin-top: 12px; border-top: 1px solid var(--green-pale); padding-top: 12px; }
+  .result-card.open .pflanzen-details { display: block; }
+  .result-card.open .expand-hint { display: none; }
+  .pflanzen-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+  .pflanze-item { background: var(--green-pale); border-radius: 10px; padding: 8px 12px; font-size: 0.85rem; }
+  .pflanze-item .p-nr { font-size: 0.72rem; color: var(--brown); font-weight: 500; text-transform: uppercase; letter-spacing: 0.04em; }
+  .pflanze-item .p-val { color: var(--green-deep); font-weight: 500; margin-top: 2px; }
+
   /* STATES */
   .empty-state { text-align: center; padding: 60px 20px; color: var(--brown); }
   .empty-state .icon { font-size: 56px; margin-bottom: 16px; }
@@ -255,21 +266,37 @@ async function runSearch() {
   area.innerHTML = `<div class="loading">⏳ Suche läuft...</div>`;
   try {
     const enc = encodeURIComponent(q);
-    const rows = await sb(`${TABLE}?or=(kundennummer.ilike.*${enc}*,nachname.ilike.*${enc}*,vorname.ilike.*${enc}*,ortsteil.ilike.*${enc}*)&limit=20`);
+    const rows = await sb(`${TABLE}?select=*&or=(kundennummer.ilike.*${enc}*,nachname.ilike.*${enc}*,vorname.ilike.*${enc}*,ortsteil.ilike.*${enc}*)&limit=20`);
     if (!rows || rows.length === 0) {
       area.innerHTML = `<div class="empty-state"><div class="icon">🌱</div><h3>Nichts gefunden</h3><p>Kein Kunde mit „${esc(q)}" gefunden.</p></div>`;
       return;
     }
     let html = rows.length > 1 ? `<div class="results-count">${rows.length} Treffer</div>` : "";
     rows.forEach(k => {
-      html += `<div class="result-card">
+      // Collect pflanze1–pflanze12
+      let pflanzenItems = "";
+      let pflanzenCount = 0;
+      for (let i = 1; i <= 12; i++) {
+        const val = k[`pflanze${i}`] || k[`pflanze_${i}`] || "";
+        if (val && val.trim()) {
+          pflanzenItems += `<div class="pflanze-item"><div class="p-nr">Pflanze ${i}</div><div class="p-val">${esc(val)}</div></div>`;
+          pflanzenCount++;
+        }
+      }
+      const hasPflanzen = pflanzenCount > 0;
+
+      html += `<div class="result-card" onclick="this.classList.toggle('open')">
         <div class="card-header">
           <div class="kunde-name">${esc((k.vorname||"") + " " + (k.nachname||""))}</div>
           <div class="kunde-nr">#${esc(k.kundennummer||"–")}</div>
         </div>
         <div class="card-row"><div class="card-label">Ortsteil</div><div class="card-value">${esc(k.ortsteil||"–")}</div></div>
-        <div class="card-row"><div class="card-label">E-Mail</div><div class="card-value">${k.email ? `<a href="mailto:${esc(k.email)}" style="color:var(--green-mid)">${esc(k.email)}</a>` : "–"}</div></div>
-        ${k.pflanzen ? `<div class="card-row"><div class="card-label">Pflanzen</div><div class="card-value"><span class="pflanzen-badge">🪴 ${esc(k.pflanzen+"")} Pflanzen</span></div></div>` : ""}
+        <div class="card-row"><div class="card-label">E-Mail</div><div class="card-value">${k.email ? `<a href="mailto:${esc(k.email)}" style="color:var(--green-mid)" onclick="event.stopPropagation()">${esc(k.email)}</a>` : "–"}</div></div>
+        ${hasPflanzen ? `
+        <div class="card-row"><div class="card-label">Pflanzen</div><div class="card-value"><span class="pflanzen-badge">🪴 ${pflanzenCount} Pflanze${pflanzenCount !== 1 ? "n" : ""}</span></div></div>
+        <div class="expand-hint">▼ Tippen um Pflanzen anzuzeigen</div>
+        <div class="pflanzen-details"><div class="pflanzen-grid">${pflanzenItems}</div></div>
+        ` : ""}
       </div>`;
     });
     area.innerHTML = html;
@@ -323,7 +350,11 @@ function parseCSV(text) {
     else if (h === "nachname" || h === "name") map[i] = "nachname";
     else if (h === "email" || h === "e-mail") map[i] = "email";
     else if (h === "ortsteil" || h === "ort") map[i] = "ortsteil";
-    else if (h.includes("pflanz") || h.includes("anzahl")) map[i] = "pflanzen";
+    else if (h.includes("pflanz") || h.includes("anzahl")) {
+      const m = h.match(/(\d+)$/);
+      if (m) map[i] = `pflanze${m[1]}`;
+      else map[i] = "pflanzen";
+    }
   });
 
   return lines.slice(1).filter(l => l.trim()).map(line => {
