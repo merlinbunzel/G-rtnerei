@@ -57,11 +57,16 @@
   }
   .header-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
   .header-title { font-family: 'Playfair Display', serif; font-size: 1.3rem; display: flex; align-items: center; gap: 8px; }
-  .logout-btn {
+  .header-btns { display: flex; gap: 8px; }
+  .logout-btn, .settings-btn {
     background: rgba(255,255,255,0.15); border: none; color: white; padding: 6px 14px;
     border-radius: 20px; font-size: 0.8rem; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: background 0.2s;
   }
-  .logout-btn:hover { background: rgba(255,255,255,0.25); }
+  .logout-btn:hover, .settings-btn:hover { background: rgba(255,255,255,0.25); }
+
+  /* SETTINGS PANEL */
+  #settings-panel { display: none; }
+  #settings-panel.open { display: block; }
   .search-box { display: flex; gap: 10px; align-items: center; }
   .search-box input {
     flex: 1; padding: 12px 18px; border: none; border-radius: 12px; font-size: 1rem;
@@ -154,7 +159,10 @@
   <header>
     <div class="header-top">
       <div class="header-title">🌿 Kundensuche</div>
-      <button class="logout-btn" onclick="doLogout()">Abmelden</button>
+      <div class="header-btns">
+        <button class="settings-btn" onclick="toggleSettings()">⚙️</button>
+        <button class="logout-btn" onclick="doLogout()">Abmelden</button>
+      </div>
     </div>
     <div class="search-box">
       <input type="text" id="search-input" placeholder="Kundennummer, Name oder Ortsteil..."
@@ -173,16 +181,18 @@
       </div>
     </div>
 
-    <div class="upload-section">
-      <h3>📁 Daten aktualisieren</h3>
-      <p>CSV aus FileMaker exportieren und hier hochladen.<br>Alle bisherigen Daten werden ersetzt.</p>
-      <button class="upload-btn" onclick="document.getElementById('csv-file-input').click()">CSV hochladen</button>
-      <input type="file" id="csv-file-input" accept=".csv" onchange="handleCSV(event)" />
-      <div class="upload-status" id="upload-status"></div>
-      <div class="csv-hint">
-        <strong>📋 Erwartetes CSV-Format (erste Zeile = Spaltenname):</strong>
-        Kundennummer, Vorname, Nachname, email, Ortsteil<br>
-        <em>Spaltenreihenfolge egal – Groß/Kleinschreibung wird ignoriert</em>
+    <div id="settings-panel">
+      <div class="upload-section">
+        <h3>📁 Daten aktualisieren</h3>
+        <p>CSV aus FileMaker exportieren und hier hochladen.<br>Alle bisherigen Daten werden ersetzt.</p>
+        <button class="upload-btn" onclick="document.getElementById('csv-file-input').click()">CSV hochladen</button>
+        <input type="file" id="csv-file-input" accept=".csv" onchange="handleCSV(event)" />
+        <div class="upload-status" id="upload-status"></div>
+        <div class="csv-hint">
+          <strong>📋 Erwartetes CSV-Format (erste Zeile = Spaltenname):</strong>
+          Kundennummer, Vorname, Nachname, email, Ortsteil<br>
+          <em>Spaltenreihenfolge egal – Groß/Kleinschreibung wird ignoriert</em>
+        </div>
       </div>
     </div>
   </main>
@@ -363,6 +373,10 @@ function parseCSV(text) {
     Object.entries(map).forEach(([i, col]) => { row[col] = (cols[i]||"").trim().replace(/^["']|["']$/g,""); });
     return row;
   }).filter(r => r.kundennummer);
+}
+
+function toggleSettings() {
+  document.getElementById("settings-panel").classList.toggle("open");
 }
 
 function setStatus(msg, color) {
