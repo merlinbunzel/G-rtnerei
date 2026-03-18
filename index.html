@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Gärtnerei</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=DM+Sans:wght@300;400;500&display=swap');
 
@@ -286,8 +287,9 @@
     <div class="login-icon">🌿</div>
     <h1>Botanikum</h1>
     <p>Kundensuche – Bitte anmelden</p>
+    <input type="email" id="email-input" placeholder="E-Mail" />
     <input type="password" id="pw-input" placeholder="Passwort" />
-    <button class="login-btn" onclick="doLogin()">Anmelden</button>
+    <button class="login-btn" id="login-btn" onclick="doLogin()">Anmelden</button>
     <div class="login-error" id="login-error">Falsches Passwort</div>
   </div>
 </div>
@@ -426,43 +428,47 @@
 </div>
 
 <script>
-const PASSWORD       = "gaertnerei2024";
 const SUPABASE_URL   = "https://gkchaujjzhxwbdyefjyh.supabase.co";
 const SUPABASE_KEY   = "sb_publishable_TTNE8F3A0GcGaUvI2RmKNQ_3TXECYZx";
 const TABLE          = "kunden";
 const FAHRPLAN_TABLE = "fahrplan";
-const STORAGE_AUTH   = "gaertnerei_auth";
 const LKW_CONFIG_TABLE = "lkw_config";
+
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 let selectedKunde = null;
 let calWeekOffset = 0;
 let lkwWeekOffset = 0;
 
 // ── INIT ──────────────────────────────────────────────────
-window.onload = () => {
-  document.getElementById("pw-input").addEventListener("keydown", e => { if (e.key === "Enter") doLogin(); });
+window.onload = async () => {
+  ["email-input","pw-input"].forEach(id => {
+    document.getElementById(id).addEventListener("keydown", e => { if (e.key === "Enter") doLogin(); });
+  });
   document.getElementById("plan-datum").value = new Date().toISOString().split("T")[0];
-  if (localStorage.getItem(STORAGE_AUTH) === "true") {
-    showApp();
-    loadStats();
-    loadDriverNames();
-  }
+  const { data: { session } } = await supabase.auth.getSession();
+  if (session) { showApp(); loadStats(); loadDriverNames(); }
   document.addEventListener("click", e => {
     if (!e.target.closest(".plan-input-group")) closeAutocomplete();
   });
 };
 
 // ── AUTH ──────────────────────────────────────────────────
-function doLogin() {
-  if (document.getElementById("pw-input").value === PASSWORD) {
-    localStorage.setItem(STORAGE_AUTH, "true");
-    showApp(); loadStats(); loadDriverNames();
-  } else {
+async function doLogin() {
+  const email = document.getElementById("email-input").value.trim();
+  const password = document.getElementById("pw-input").value;
+  const btn = document.getElementById("login-btn");
+  btn.disabled = true; btn.textContent = "...";
+  const { error } = await supabase.auth.signInWithPassword({ email, password });
+  if (error) {
     document.getElementById("login-error").style.display = "block";
     document.getElementById("pw-input").value = "";
+    btn.disabled = false; btn.textContent = "Anmelden";
+  } else {
+    showApp(); loadStats(); loadDriverNames();
   }
 }
-function doLogout() { localStorage.removeItem(STORAGE_AUTH); location.reload(); }
+async function doLogout() { await supabase.auth.signOut(); location.reload(); }
 function showApp() {
   document.getElementById("login-screen").style.display = "none";
   document.getElementById("app-screen").style.display = "block";
@@ -514,11 +520,13 @@ function switchSubTab(sub) {
 
 // ── SUPABASE ──────────────────────────────────────────────
 async function sb(path, opts = {}) {
+  const { data: { session } } = await supabase.auth.getSession();
+  const token = session?.access_token || SUPABASE_KEY;
   const res = await fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
     ...opts,
     headers: {
       "apikey": SUPABASE_KEY,
-      "Authorization": `Bearer ${SUPABASE_KEY}`,
+      "Authorization": `Bearer ${token}`,
       "Content-Type": "application/json",
       "Prefer": opts.prefer || "return=minimal",
       ...(opts.extraHeaders || {})
@@ -770,9 +778,11 @@ async function handleCSV(event) {
       const rows = parseCSV(e.target.result);
       if (rows.length === 0) { setStatus("❌ Keine Daten gefunden – Format prüfen.", "#c0392b"); return; }
       setStatus(`⏳ ${rows.length} Einträge werden hochgeladen...`, "var(--brown)");
+      const { data: { session } } = await supabase.auth.getSession();
+      const token = session?.access_token || SUPABASE_KEY;
       const delRes = await fetch(`${SUPABASE_URL}/rest/v1/${TABLE}?id=gte.0`, {
         method: "DELETE",
-        headers: { "apikey": SUPABASE_KEY, "Authorization": `Bearer ${SUPABASE_KEY}`, "Prefer": "return=minimal" }
+        headers: { "apikey": SUPABASE_KEY, "Authorization": `Bearer ${token}`, "Prefer": "return=minimal" }
       });
       if (!delRes.ok) throw new Error("Löschen fehlgeschlagen: " + await delRes.text());
       for (let i = 0; i < rows.length; i += 500) {
