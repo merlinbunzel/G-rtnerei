@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Gärtnerei</title>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=DM+Sans:wght@300;400;500&display=swap');
 
@@ -434,7 +434,7 @@ const TABLE          = "kunden";
 const FAHRPLAN_TABLE = "fahrplan";
 const LKW_CONFIG_TABLE = "lkw_config";
 
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+let supabase;
 
 let selectedKunde = null;
 let calWeekOffset = 0;
@@ -442,6 +442,7 @@ let lkwWeekOffset = 0;
 
 // ── INIT ──────────────────────────────────────────────────
 window.onload = async () => {
+  supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
   ["email-input","pw-input"].forEach(id => {
     document.getElementById(id).addEventListener("keydown", e => { if (e.key === "Enter") doLogin(); });
   });
